@@ -1,0 +1,50 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.swp
+*.swo
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+/media/
+!media/.gitkeep
+/static/
+!static/.gitkeep
+.env
+*.env
+
+# Virtual environment
+venv/
+env/
+*.venv/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-workspace
+
+# Migrations (optional, keep if you want to version control migrations)
+**/migrations/*.py
+!**/migrations/__init__.py
+
+# Node.js (if using frontend assets)
+node_modules/
+npm-debug.log
+yarn.lock
+pnpm-lock.yaml
+
+# Docker
+*.log
+*.pid
+*.seed
+*.backup
+*.history
+docker-compose.override.yml
+
+# Deployment
+.envrc
+*.pem

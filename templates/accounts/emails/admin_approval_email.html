@@ -1,0 +1,10 @@
+{% autoescape off %}
+Hi {{ user.first_name }},
+
+{% if is_approved %}
+Congratulations! your restaurant has been approved.
+{% else %}
+Sorry! your restaurant has been rejected.For more details, please contact support@vegpyfood.com
+{% endif %}
+
+{% endautoescape %}
