@@ -9,7 +9,7 @@ from vendor.models import Vendor
 from django.contrib import messages
 from menu.models import Fooditem
 from django.contrib.auth.decorators import login_required,user_passes_test
-from menu.forms import CategoryForm
+from menu.forms import CategoryForm, FooditemForm
 from django.template.defaultfilters import slugify
 
 def get_vendor(request):
@@ -66,7 +66,8 @@ def fooditem_by_category(request,pk=None):
     }
     return render(request,'vendor/fooditem_by_category.html',context)
 
-
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
 def add_category(request):
     if request.method=='POST':
         form=CategoryForm(request.POST)
@@ -85,6 +86,9 @@ def add_category(request):
     }
     return render(request,'vendor/add_category.html',context)
 
+
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
 def edit_category(request,pk=None):
     category=get_object_or_404(Category,pk=pk)
 
@@ -107,8 +111,68 @@ def edit_category(request,pk=None):
     return render(request,'vendor/edit_category.html',context)
 
 
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
 def delete_category(request,pk=None):
     category=get_object_or_404(Category,pk=pk)
     category.delete()
     messages.success(request,'Category Deleted Successfully')
     return redirect('menu_Builder')
+
+
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
+def add_fooditem(request):
+    if request.method=='POST':
+        form=FooditemForm(request.POST,request.FILES)
+        if form.is_valid():
+            foodtitle=form.cleaned_data['food_title']
+            fooditem=form.save(commit=False)
+            fooditem.vendor=get_vendor(request)
+            fooditem.slug=slugify(foodtitle)
+            fooditem.save()
+            messages.success(request,'Food Item Added Successfully')
+            return redirect('fooditem_by_category',fooditem.category.id)
+    else:
+
+        form=FooditemForm()
+        form.fields['category'].queryset=Category.objects.filter(vendor=get_vendor(request))
+    context={
+        'form':form
+    }
+    return render(request,'vendor/add_fooditem.html',context)
+
+
+
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
+def edit_fooditem(request,pk=None):
+    fooditem=get_object_or_404(Fooditem,pk=pk)
+
+    if request.method=='POST':
+        form=FooditemForm(request.POST,instance=fooditem)
+        if form.is_valid():
+            foodtitle=form.cleaned_data['food_title']
+            fooditem=form.save(commit=False)
+            fooditem.vendor=get_vendor(request)
+            fooditem.slug=slugify(foodtitle)
+            fooditem.save()
+            messages.success(request,'Food Item Updated Successfully')
+            return redirect('fooditem_by_category',fooditem.category.id)
+    else:
+        form=FooditemForm(instance=fooditem)
+        form.fields['category'].queryset=Category.objects.filter(vendor=get_vendor(request))
+    context={
+        'form':form,
+        'fooditem':fooditem
+    }
+    return render(request,'vendor/edit_fooditem.html',context)
+
+
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
+def delete_fooditem(request,pk=None):
+    fooditem=get_object_or_404(Fooditem,pk=pk)
+    fooditem.delete()
+    messages.success(request,'Food Item Deleted Successfully')
+    return redirect('fooditem_by_category',fooditem.category.id)
