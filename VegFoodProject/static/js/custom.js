@@ -59,6 +59,75 @@ function onPlaceChanged() {
 }
 
 // Ensure DOM is loaded before initializing
-document.addEventListener("DOMContentLoaded", function () {
-    initAutoComplete();
+// document.addEventListener("DOMContentLoaded", function () {
+//     initAutoComplete();
+// });
+
+
+//add to cart
+$(document).ready(function () {
+    $('.add_to_cart').on('click',function (e) {
+        e.preventDefault();
+        food_id=$(this).attr('data-id');
+        url=$(this).attr('data-url');
+
+        $.ajax({
+            type:'GET',
+            url:url,
+       
+            success:function (response) {
+                if(response.status=='login_required'){
+                    swal(response.message,'','info').then(function(){
+                        window.location='/login'
+                    })
+                    
+                }else if(response.status=='Failed'){
+                    swal(response.message,'','error')
+                }
+                else{
+                    $('#cart_counter').html(response.cart_counter['cart_count'])
+                    $('#qty-'+food_id).html(response.qty)
+                }
+            }
+        });
+        
+    });
+   
+    // place cart item quantity on load
+    $('.item_qty').each(function () {
+        var item_id=$(this).attr('id');
+        var qty=$(this).attr('data-qty');
+        $('#'+item_id).html(qty);
+    
+    });
+});
+
+   
+ //decrease cart   
+ $(document).ready(function () {
+    $('.decrease_cart').on('click',function (e) {
+        e.preventDefault();
+        food_id=$(this).attr('data-id');
+        url=$(this).attr('data-url');
+
+        $.ajax({
+            type:'GET',
+            url:url,
+        
+            success:function (response) {
+                if(response.status=='login_required'){
+                    swal(response.message,'','info').then(function(){
+                        window.location='/login'
+                    })
+                    
+                }else if(response.status=='Failed'){
+                    swal(response.message,'','error')
+                }else{
+                    $('#cart_counter').html(response.cart_counter['cart_count'])
+                    $('#qty-'+food_id).html(response.qty)
+                }
+            }
+        });
+        
+    });
 });
