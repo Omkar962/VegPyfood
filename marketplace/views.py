@@ -5,7 +5,7 @@ from vendor.models import Vendor
 from menu.models import Category,Fooditem
 from django.db.models import Prefetch
 from .models import Cart
-
+from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 
 def marketplace(req):
@@ -102,3 +102,28 @@ def delete_cart(req,cart_id):
                 return JsonResponse({'status':'Failed','message':'Cart item does not exist!'})
         else:
              return JsonResponse({'status':'Failed','message':'Invalid request'})
+        
+
+
+def search(req):
+    address=req.GET['address']
+    latitude=req.GET['lat']
+    longitude=req.GET['lng']
+    radius=req.GET['radius']
+    keyword=req.GET['keyword']
+
+    # Get vendors based on food items matching the keyword
+    fetch_vendors_by_fooditem=Fooditem.objects.filter(food_title__icontains=keyword,is_available=True).values_list('vendor',flat=True)
+
+    # Combining food search based vendors filter and  simple keyword matching vendors filters
+    vendors=Vendor.objects.filter(Q(id__in=fetch_vendors_by_fooditem)|Q(vendor_name__icontains=keyword,is_approved=True,user__is_active=True))
+ 
+    vendor_Count=vendors.count()
+    context={
+        'vendors':vendors,
+        'vendor_Count':vendor_Count
+    }
+
+    return render(req,'marketplace/listings.html',context)
+
+

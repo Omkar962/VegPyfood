@@ -60,6 +60,11 @@ def registerVendor(request):
 
             messages.success(request,"Your account has been registered successfully! Please wait for Approval.")
             return redirect('registerVendor')
+        else:
+            # **Ensure to return a response if the form is invalid**
+            messages.error(request, "Please correct the errors.")
+            context = {'form': form, 'vform': vform}
+            return render(request, 'accounts/registerVendor.html', context)
     else:
         form=UserForm()
         vform=VendorForm()
