@@ -130,7 +130,7 @@ def search(req):
                                       user_profile__location__distance_lte=(pnt,D(km=radius))
                                       ).annotate(distance=Distance("user_profile__location",pnt)).order_by("distance")
         for v in vendors:
-            v.kms=v.distance.km
+            v.kms=round(v.distance.km,1)
 
     vendor_Count=vendors.count()
     context={
