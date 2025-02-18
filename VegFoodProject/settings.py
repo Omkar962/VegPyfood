@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'accounts',
     'vendor',
     'menu',
@@ -84,7 +85,8 @@ WSGI_APPLICATION = 'VegFoodProject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        #'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': config('DB_NAME'),
         'USER':config('DB_USER'),
         'PASSWORD':config('DB_PASSWORD'),
@@ -158,3 +160,18 @@ EMAIL_USE_TLS=True
 DEFAULT_FROM_EMAIL=config('DEFAULT_FROM_EMAIL')
 
 GOOGLE_API_KEY=config('GOOGLE_API_KEY')
+
+
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# GDAL Settings
+GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo', 'gdal.dll')
+
+# GEOS Settings
+GEOS_LIBRARY_PATH = os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo', 'geos_c.dll')
+
+os.environ['PROJ_LIB'] = os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo', 'data', 'proj')
+os.environ['PATH'] += os.pathsep + os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo')
+

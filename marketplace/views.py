@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import render,get_object_or_404,redirect
 from .context_processors import cart_counter,get_cart_amount
 from vendor.models import Vendor
 from menu.models import Category,Fooditem
@@ -7,6 +7,10 @@ from django.db.models import Prefetch
 from .models import Cart
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+
+from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.measure import D
+from django.contrib.gis.db.models.functions import Distance
 
 def marketplace(req):
     vendors=Vendor.objects.filter(user__is_active=True,is_approved=True)
@@ -106,6 +110,8 @@ def delete_cart(req,cart_id):
 
 
 def search(req):
+    if not 'address' in req.GET:
+        return redirect('marketplace')
     address=req.GET['address']
     latitude=req.GET['lat']
     longitude=req.GET['lng']
@@ -117,11 +123,20 @@ def search(req):
 
     # Combining food search based vendors filter and  simple keyword matching vendors filters
     vendors=Vendor.objects.filter(Q(id__in=fetch_vendors_by_fooditem)|Q(vendor_name__icontains=keyword,is_approved=True,user__is_active=True))
- 
+    
+    if latitude and longitude and radius:
+        pnt=GEOSGeometry('POINT(%s %s)'% (longitude,latitude))
+        vendors=Vendor.objects.filter(Q(id__in=fetch_vendors_by_fooditem)|Q(vendor_name__icontains=keyword,is_approved=True,user__is_active=True),
+                                      user_profile__location__distance_lte=(pnt,D(km=radius))
+                                      ).annotate(distance=Distance("user_profile__location",pnt)).order_by("distance")
+        for v in vendors:
+            v.kms=v.distance.km
+
     vendor_Count=vendors.count()
     context={
         'vendors':vendors,
-        'vendor_Count':vendor_Count
+        'vendor_Count':vendor_Count,
+        'source_location':address
     }
 
     return render(req,'marketplace/listings.html',context)
