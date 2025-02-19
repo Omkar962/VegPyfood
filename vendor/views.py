@@ -1,11 +1,13 @@
+from django.db import IntegrityError
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from menu.models import Category
 from accounts.forms import UserProfileForm
 from accounts.models import UserProfile
 from accounts.views import check_role_vendor
-from vendor.forms import VendorForm
-from vendor.models import Vendor
+from vendor.forms import VendorForm,OpeningHourForm
+from vendor.models import Vendor,OpeningHour
 from django.contrib import messages
 from menu.models import Fooditem
 from django.contrib.auth.decorators import login_required,user_passes_test
@@ -178,3 +180,36 @@ def delete_fooditem(request,pk=None):
     fooditem.delete()
     messages.success(request,'Food Item Deleted Successfully')
     return redirect('fooditem_by_category',fooditem.category.id)
+
+
+def opening_hours(req):
+    opening_hours=OpeningHour.objects.filter(vendor=get_vendor(req))
+    form=OpeningHourForm()
+    context={
+        'form':form,
+        'opening_hours':opening_hours
+    }
+    return render(req,'vendor/opening_hours.html',context)
+
+def add_opening_hours(req):
+    if req.user.is_authenticated:
+        if req.headers.get('x-requested-with') == 'XMLHttpRequest' and req.method=='POST':
+            day=req.POST.get('day')
+            from_hour=req.POST.get('from_hour')
+            to_hour=req.POST.get('to_hour')
+            is_closed=req.POST.get('is_closed')
+            try:
+                hour=OpeningHour.objects.create(vendor=get_vendor(req),day=day,from_hour=from_hour,to_hour=to_hour,is_closed=is_closed)
+                if hour:
+                    day=OpeningHour.objects.get(id=hour.id)
+                    if day.is_closed:
+                        response={'status':'success','id':hour.id,'day':day.get_day_display(),'is_closed':'Closed'}
+                    else:
+                        response={'status':'success','id':hour.id,'day':day.get_day_display(),'from_hour':from_hour,'to_hour':to_hour}
+                return JsonResponse(response)
+            except IntegrityError as e:
+                response={'status':'failed','message':from_hour+'-'+to_hour+' already exists for this day!','error':str(e)}
+                return JsonResponse(response)
+        else:
+            pass
+
