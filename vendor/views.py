@@ -1,7 +1,7 @@
 from django.db import IntegrityError
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-
+from django.http import HttpResponse
 from menu.models import Category
 from accounts.forms import UserProfileForm
 from accounts.models import UserProfile
@@ -211,5 +211,13 @@ def add_opening_hours(req):
                 response={'status':'failed','message':from_hour+'-'+to_hour+' already exists for this day!','error':str(e)}
                 return JsonResponse(response)
         else:
-            pass
+            HttpResponse("Invalid Request")
+
+
+def remove_opening_hours(req,pk=None):
+    if req.user.is_authenticated:
+        if req.headers.get('x-requested-with') == 'XMLHttpRequest':
+            hour=get_object_or_404(OpeningHour,pk=pk)
+            hour.delete()
+            return JsonResponse({'status':'success','id':pk})
 
