@@ -95,7 +95,7 @@ $(document).ready(function () {
                 else{
                     $('#cart_counter').html(response.cart_counter['cart_count'])
                     $('#qty-'+food_id).html(response.qty)
-                    Totalamount(response.cart_amount['subtotal'],response.cart_amount['tax'],response.cart_amount['total'])
+                    Totalamount(response.cart_amount['subtotal'],response.cart_amount['tax_dict'],response.cart_amount['total'])
                 }
             }
         });
@@ -138,7 +138,7 @@ $(document).ready(function () {
                         if(window.location.pathname=="/cart/"){
                             removeCartItem(response.qty,cart_id)
                             checkEmptycart()
-                            Totalamount(response.cart_amount['subtotal'],response.cart_amount['tax'],response.cart_amount['total'])
+                            Totalamount(response.cart_amount['subtotal'],response.cart_amount['tax_dict'],response.cart_amount['total'])
                         }
                     }
                 }
@@ -168,7 +168,7 @@ $(document).ready(function () {
                         swal(response.status,response.message,"success")
                         removeCartItem(0,cart_id)
                         checkEmptycart()
-                        Totalamount(response.cart_amount['subtotal'],response.cart_amount['tax'],response.cart_amount['total'])
+                        Totalamount(response.cart_amount['subtotal'],response.cart_amount['tax_dict'],response.cart_amount['total'])
                         
                     }
                 }
@@ -195,11 +195,17 @@ $(document).ready(function () {
         }
     }
 
-    function Totalamount(subtotal,tax,total){
+    function Totalamount(subtotal,tax_dict,total){
         if(window.location.pathname=="/cart/"){
             $('#subtotal').html(subtotal)
-            $('#tax').html(tax)
             $('#total').html(total)
+            for(k1 in tax_dict){
+                for(k2 in tax_dict[k1]){
+                    $('#tax-'+k1).html(tax_dict[k1][k2])
+
+                }
+
+            }
         }
 
     }
