@@ -7,6 +7,9 @@ from django.db.models import Prefetch
 from .models import Cart
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
+from orders.forms import OrderForm
+
+from accounts.models import UserProfile
 
 from datetime import date,datetime
 from django.contrib.gis.geos import GEOSGeometry
@@ -155,4 +158,30 @@ def search(req):
 
     return render(req,'marketplace/listings.html',context)
 
+@login_required(login_url='login')
+def checkout(req):
+   
+    cart_items=Cart.objects.filter(user=req.user).order_by("created_at")
+    cart_count=cart_items.count()
+    if cart_count<=0:
+        return redirect('marketplace')
+    user_profile=UserProfile.objects.get(user=req.user)
+    default_values={
+        'first_name':req.user.first_name,
+        'last_name':req.user.last_name,
+        'phone':req.user.phone_number,
+        'email':req.user.email,
+        'address':user_profile.address,
+        'country':user_profile.country,
+        'state':user_profile.state,
+        'city':user_profile.city,
+        'pin_code':user_profile.pin_code,
+    }
 
+
+    form=OrderForm(initial=default_values)
+    context={
+        'form':form,
+        'cart_items':cart_items
+    }
+    return render(req,'marketplace/checkout.html',context)
