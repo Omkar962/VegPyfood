@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'marketplace',
     'customers',
     'orders',
+
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'VegFoodProject.urls'
@@ -177,4 +179,7 @@ GEOS_LIBRARY_PATH = os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osge
 
 os.environ['PROJ_LIB'] = os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo', 'data', 'proj')
 os.environ['PATH'] += os.pathsep + os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo')
+
+
+SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 

@@ -5,7 +5,8 @@ from menu.models import Fooditem
 class Payment(models.Model):
     PAYMENT_METHOD=(
         ('PayPal','Paypal'),
-        ('RazorPay','RazorPay')
+        ('RazorPay','RazorPay'),
+        ('CashOnDelivery','CashOnDelivery')
     )
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     transaction_id=models.CharField(max_length=100)
@@ -46,7 +47,7 @@ class Order(models.Model):
 
     payment_method=models.CharField(max_length=25)
     status=models.CharField(choices=STATUS,default='New',max_length=15)
-    is_orderd=models.BooleanField(default=False)
+    is_ordered=models.BooleanField(default=False)
     created_at=models.DateTimeField(auto_now_add=True)
     modified_at=models.DateTimeField(auto_now=True)
 
@@ -58,7 +59,7 @@ class Order(models.Model):
         return self.order_number
     
 
-class OrderdFood(models.Model):
+class OrderedFood(models.Model):
     order=models.ForeignKey(Order,on_delete=models.CASCADE)
     payment=models.ForeignKey(Payment,on_delete=models.SET_NULL,null=True,blank=True)
     user=models.ForeignKey(User,on_delete=models.CASCADE)
