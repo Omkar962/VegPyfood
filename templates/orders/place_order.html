@@ -131,7 +131,7 @@
     console.log('csrftoken===>', csrftoken)
 
     function placeOrderConfirm(){
-        var transaction_id = Math.floor(Math.random() * 100000000);
+        var transaction_id = Math.floor(Math.random() * 10000000000);
         var status = 'Success';
 
         sendTransaction(transaction_id, payment_method, status);

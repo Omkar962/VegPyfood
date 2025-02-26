@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-
+import datetime
 from vendor.models import Vendor
 from .forms import UserForm
 from . models import User,UserProfile
@@ -147,7 +147,7 @@ def myAccount(request):
 @login_required(login_url='login')
 @user_passes_test(check_role_customer)
 def custDashboard(request):
-    orders=Order.objects.filter(user=request.user,is_ordered=True)
+    orders=Order.objects.filter(user=request.user,is_ordered=True).order_by('-created_at')
     recent_orders=orders[:5]
     context={
         'orders':orders,
@@ -160,8 +160,27 @@ def custDashboard(request):
 @user_passes_test(check_role_vendor)
 def vendorDashboard(request):
     vendor=Vendor.objects.get(user=request.user)
+    orders=Order.objects.filter(vendors__in=[vendor.id],is_ordered=True).order_by('-created_at')
+    recent_orders=orders[:5]
+    total_revenue=0
+
+    #current month revenue
+    total_currentmonth_revenue=0
+    current_month=datetime.datetime.now().month
+    current_month_orders=orders.filter(vendors__in=[vendor.id],created_at__month=current_month)
+    for i in current_month_orders:
+        total_currentmonth_revenue+=i.get_total_by_vendor()['total']
+
+    #total revenue
+    for i in orders:
+        total_revenue+=i.get_total_by_vendor()['total']
+
     context={
-        'vendor':vendor
+        'recent_orders':recent_orders,
+        'orders_count':orders.count(),
+        'orders':orders,
+        'total_revenue':total_revenue,
+        'total_currentmonth_revenue':total_currentmonth_revenue
     }
     return render(request,"accounts/vendorDashboard.html",context)
 

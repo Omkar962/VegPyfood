@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'orders.request_object.requestObjectMiddleware',#custom middleware to access request obejct in models
 
 ]
 
@@ -183,3 +184,5 @@ os.environ['PATH'] += os.pathsep + os.path.join(BASE_DIR, 'venv', 'Lib', 'site-p
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
 
+TIME_ZONE = 'Asia/Kolkata'  # Change timezone based on location
+USE_TZ = True

@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from marketplace.models import Cart
+from marketplace.models import Cart,Fooditem, Tax
 from marketplace.context_processors import get_cart_amount
 from . forms import OrderForm
 import simplejson as json
@@ -17,6 +17,36 @@ def place_order(req):
     if cart_count<=0:
         return redirect('marketplace')
     
+    vendors_ids=[]
+    for i in cart_items:
+        if i.fooditem.vendor.id not in vendors_ids:
+            vendors_ids.append(i.fooditem.vendor.id)
+    
+
+    get_tax=Tax.objects.filter(is_active=True)
+    subtotal=0
+    l={}
+    total_data={}
+    for i in cart_items:
+        fooditem=Fooditem.objects.get(pk=i.fooditem.id,vendor_id__in=vendors_ids)
+        vid=fooditem.vendor.id
+        if vid in l:
+            subtotal=l[vid]
+            subtotal+=(fooditem.price*i.quantity)
+            l[vid]=subtotal
+        else:
+            subtotal=(fooditem.price*i.quantity)
+            l[vid]=subtotal
+
+        tax_dict={}
+        for j in get_tax:
+            tax_type=j.tax_type
+            tax_percentage=j.tax_percentage
+            tax_amount=round((tax_percentage*subtotal)/100,2)
+            tax_dict.update({tax_type:{str(tax_percentage):str(tax_amount)}})
+        total_data.update({fooditem.vendor.id:{str(subtotal):str(tax_dict)}})
+
+        
     subtotal=get_cart_amount(req)['subtotal']
     total_tax=get_cart_amount(req)['tax']
     total=get_cart_amount(req)['total']
@@ -39,10 +69,12 @@ def place_order(req):
             order.user=req.user
             order.total=total
             order.tax_data=json.dumps(tax_data)
+            order.total_data=json.dumps(total_data)
             order.total_tax=total_tax
             order.payment_method=req.POST['payment_method']
             order.save()
             order.order_number=generate_order_number(order.id)
+            order.vendors.add(*vendors_ids)
             order.save()
 
             context={

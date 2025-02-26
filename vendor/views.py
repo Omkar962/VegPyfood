@@ -13,6 +13,7 @@ from menu.models import Fooditem
 from django.contrib.auth.decorators import login_required,user_passes_test
 from menu.forms import CategoryForm, FooditemForm
 from django.template.defaultfilters import slugify
+from orders.models import Order,OrderedFood
 
 def get_vendor(request):
     return Vendor.objects.get(user=request.user)
@@ -221,3 +222,28 @@ def remove_opening_hours(req,pk=None):
             hour.delete()
             return JsonResponse({'status':'success','id':pk})
 
+def order_detail(req,order_number):
+    try:
+        order=Order.objects.get(order_number=order_number,is_ordered=True)
+        ordered_food=OrderedFood.objects.filter(order=order,fooditem__vendor=get_vendor(req))
+
+        context={
+            'order':order,
+            'ordered_food':ordered_food,
+            'subtotal':order.get_total_by_vendor()['subtotal'],
+            'tax_data':order.get_total_by_vendor()['tax_dict'],
+            'total':order.get_total_by_vendor()['total']
+        }
+        return render(req,'vendor/order_detail.html',context)
+    except:
+        return redirect('vendor')
+    
+
+def my_orders(request):
+    vendor=Vendor.objects.get(user=request.user)
+    orders=Order.objects.filter(vendors__in=[vendor.id],is_ordered=True).order_by('-created_at')
+    context={
+        'orders':orders,
+    }
+    return render(request,'vendor/my_orders.html',context)
+  
