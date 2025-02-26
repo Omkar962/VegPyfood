@@ -13,7 +13,7 @@
                     <div class="logo">
                         <figure>
                             <a href="{% url 'home' %}" class="light-logo">
-                                <img src="{% static 'logo/vegpyLogo.png'%}" alt="FoodOnline" width="250">
+                                <img src="{% static 'logo/vegpyfoodLogo.png'%}" alt="FoodOnline" width="250">
                             </a>
                         </figure>
                     </div>
@@ -43,7 +43,7 @@
                         <a class="cs-color cs-popup-joinus-btn login-popup" style="color: white;" href="{% url 'myAccount' %}">My Account</a>
                         <a class="cs-color cs-popup-joinus-btn login-popup text-danger" href="{% url 'logout' %}">Logout</a>
                         {% else %}
-                        <a class="cs-color cs-popup-joinus-btn login-popup" href="{% url 'login' %}"  style="color: white;">Login </a>/ 
+                        <a class="cs-color cs-popup-joinus-btn login-popup" href="{% url 'login' %}"  style="color: white;">Login </a><span style="color:#84f405 ;"> /</span> 
                             <span><a href="{% url 'registerUser' %}" class="cs-color cs-popup-joinus-btn login-popup ml-0"  style="color: white;">Register</a></span></a><a class="get-start-btn" href="{% url 'registerVendor'%}">
                             Register
                             Restaurant </a>

@@ -95,6 +95,7 @@ class Order(models.Model):
         }
 
         return context
+    
 
 class OrderedFood(models.Model):
     order=models.ForeignKey(Order,on_delete=models.CASCADE)

@@ -4,10 +4,12 @@ from marketplace.context_processors import get_cart_amount
 from . forms import OrderForm
 import simplejson as json
 from .models import Order,Payment,OrderedFood
-from .utils import generate_order_number
+from .utils import generate_order_number,order_total_by_vendor
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from accounts.utils import send_notification
+from django.contrib.sites.shortcuts import get_current_site
+
 
 @login_required(login_url='login')
 def place_order(req):
@@ -142,10 +144,10 @@ def payments(request):
             'user': request.user,
             'order': order,
             'to_email': order.email,
-            # 'ordered_food': ordered_food,
-            # 'domain': get_current_site(request),
-            # 'customer_subtotal': customer_subtotal,
-            # 'tax_data': tax_data,
+            'ordered_food': ordered_food,
+            'domain': get_current_site(request),
+            'customer_subtotal': customer_subtotal,
+            'tax_data': tax_data,
         }
         send_notification(mail_subject, mail_template, context)
         
@@ -165,9 +167,9 @@ def payments(request):
                     'order': order,
                     'to_email': i.fooditem.vendor.user.email,
                     'ordered_food_to_vendor': ordered_food_to_vendor,
-                    # 'vendor_subtotal': order_total_by_vendor(order, i.fooditem.vendor.id)['subtotal'],
-                    # 'tax_data': order_total_by_vendor(order, i.fooditem.vendor.id)['tax_dict'],
-                    # 'vendor_grand_total': order_total_by_vendor(order, i.fooditem.vendor.id)['total'],
+                    'vendor_subtotal': order_total_by_vendor(order, i.fooditem.vendor.id)['subtotal'],
+                    'tax_data': order_total_by_vendor(order, i.fooditem.vendor.id)['tax_dict'],
+                    'vendor_total': order_total_by_vendor(order, i.fooditem.vendor.id)['total'],
                 }
                 send_notification(mail_subject, mail_template, context)
 

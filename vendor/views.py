@@ -232,7 +232,8 @@ def order_detail(req,order_number):
             'ordered_food':ordered_food,
             'subtotal':order.get_total_by_vendor()['subtotal'],
             'tax_data':order.get_total_by_vendor()['tax_dict'],
-            'total':order.get_total_by_vendor()['total']
+            'total':order.get_total_by_vendor()['total'],
+            'vendor':get_vendor(req)
         }
         return render(req,'vendor/order_detail.html',context)
     except:
