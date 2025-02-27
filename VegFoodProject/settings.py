@@ -26,7 +26,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG',cast=bool)
 
-ALLOWED_HOSTS = ['13.127.246.176','127.0.0.1','vegpyfood.com','www.vegpyfood.com']
+ALLOWED_HOSTS = ['13.235.134.57','127.0.0.1','vegpyfood.com','www.vegpyfood.com']
 
 
 # Application definition
