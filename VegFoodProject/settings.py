@@ -26,7 +26,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG',cast=bool)
 
-ALLOWED_HOSTS = ['13.235.134.57','127.0.0.1','vegpyfood.com','www.vegpyfood.com']
+ALLOWED_HOSTS = ['13.201.81.247','127.0.0.1','vegpyfood.com','www.vegpyfood.com']
 
 
 # Application definition
@@ -172,14 +172,15 @@ GOOGLE_API_KEY=config('GOOGLE_API_KEY')
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# GDAL Settings
-GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo', 'gdal.dll')
+if DEBUG==True:
+    # GDAL Settings
+    GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo', 'gdal.dll')
 
-# GEOS Settings
-GEOS_LIBRARY_PATH = os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo', 'geos_c.dll')
+    # GEOS Settings
+    GEOS_LIBRARY_PATH = os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo', 'geos_c.dll')
 
-os.environ['PROJ_LIB'] = os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo', 'data', 'proj')
-os.environ['PATH'] += os.pathsep + os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo')
+    os.environ['PROJ_LIB'] = os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo', 'data', 'proj')
+    os.environ['PATH'] += os.pathsep + os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo')
 
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
