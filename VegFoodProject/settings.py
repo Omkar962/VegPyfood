@@ -183,7 +183,7 @@ if DEBUG==True:
     os.environ['PATH'] += os.pathsep + os.path.join(BASE_DIR, 'venv', 'Lib', 'site-packages', 'osgeo')
 
 
-SECURE_CROSS_ORIGIN_OPENER_POLICY = 'same-origin-allow-popups'
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 TIME_ZONE = 'Asia/Kolkata'  # Change timezone based on location
 USE_TZ = True
